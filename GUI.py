@@ -116,6 +116,8 @@ def main():
             solution = solve_8puzzle_astar(state_to_solve, goal_state)
         elif algorithm == "IDA*":
             solution = solve_8puzzle_idastar(state_to_solve, goal_state)
+        elif algorithm == "SHL":  
+            solution = solve_8puzzle_hill_climbing(initial_state, goal_state)
 
         if solution:
             animate_solution(solution)
@@ -149,12 +151,13 @@ def main():
             ("IDS", lambda: solve("IDS")),
             ("GREEDY", lambda: solve("GREEDY")),
             ("IDA*", lambda: solve("IDA*")),
-            ("A*", lambda: solve("A*"))
+            ("A*", lambda: solve("A*")),
+            ("SHL", lambda: solve("SHL")) 
 
         ]
 
         for i, (name, func) in enumerate(algorithms):
-            draw_button(name, 50, 100 + i * 60, 100, 40, func)
+            draw_button(name, 50, 30 + i * 60, 100, 40, func)
         
         # Vẽ nút reset
         draw_button("Reset", 50, HEIGHT - 100, 100, 40, reset)
