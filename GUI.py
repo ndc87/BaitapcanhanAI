@@ -78,26 +78,49 @@ def main():
     goal_state = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
     current_state = [row[:] for row in initial_state]
 
+    # def solve(algorithm):
+    #     nonlocal current_state
+    #     if algorithm == "BFS":
+    #         solution = solve_8puzzle_bfs(initial_state, goal_state)
+    #     elif algorithm == "DFS":
+    #         solution = solve_8puzzle_dfs(initial_state, goal_state)
+    #     elif algorithm == "UCS":
+    #         solution = solve_8puzzle_ucs(initial_state, goal_state)
+    #     elif algorithm == "IDS":
+    #         solution = solve_8puzzle_ids(initial_state, goal_state)
+    #     elif algorithm == "GREEDY":
+    #         solution = solve_8puzzle_greedy(initial_state, goal_state)
+    #     elif algorithm == "A*":
+    #         solution = solve_8puzzle_astar(initial_state, goal_state)
+    #     elif algorithm == "IDA*":
+    #         solution = solve_8puzzle_idastar(initial_state, goal_state)
+
+    #     if solution:
+    #         animate_solution(solution)
+    #         current_state[:] = solution[-1]
     def solve(algorithm):
-        nonlocal current_state
+        nonlocal initial_state, current_state
+        state_to_solve = [row[:] for row in initial_state]  # Copy trạng thái mới nhất
+
         if algorithm == "BFS":
-            solution = solve_8puzzle_bfs(initial_state, goal_state)
+            solution = solve_8puzzle_bfs(state_to_solve, goal_state)
         elif algorithm == "DFS":
-            solution = solve_8puzzle_dfs(initial_state, goal_state)
+            solution = solve_8puzzle_dfs(state_to_solve, goal_state)
         elif algorithm == "UCS":
-            solution = solve_8puzzle_ucs(initial_state, goal_state)
+            solution = solve_8puzzle_ucs(state_to_solve, goal_state)
         elif algorithm == "IDS":
-            solution = solve_8puzzle_ids(initial_state, goal_state)
+            solution = solve_8puzzle_ids(state_to_solve, goal_state)
         elif algorithm == "GREEDY":
-            solution = solve_8puzzle_greedy(initial_state, goal_state)
+            solution = solve_8puzzle_greedy(state_to_solve, goal_state)
         elif algorithm == "A*":
-            solution = solve_8puzzle_astar(initial_state, goal_state)
+            solution = solve_8puzzle_astar(state_to_solve, goal_state)
         elif algorithm == "IDA*":
-            solution = solve_8puzzle_idastar(initial_state, goal_state)
+            solution = solve_8puzzle_idastar(state_to_solve, goal_state)
 
         if solution:
             animate_solution(solution)
             current_state[:] = solution[-1]
+
 
     def reset():
         nonlocal initial_state, current_state

@@ -1,7 +1,7 @@
 from collections import deque
 import heapq
 import random
-
+import time
 def solve_8puzzle_bfs(initial_state, goal_state):
     queue = deque([(initial_state, [])])
     visited = {state_to_tuple(initial_state)}
@@ -15,7 +15,7 @@ def solve_8puzzle_bfs(initial_state, goal_state):
                 queue.append((next_state, path + [next_state]))
     return None
 
-def solve_8puzzle_dfs(initial_state, goal_state, depth_limit=20):
+def solve_8puzzle_dfs(initial_state, goal_state, depth_limit=15):
     stack = [(initial_state, [], 0)]  # (state, path, depth)
     visited = set()
 
@@ -45,7 +45,7 @@ def solve_8puzzle_ucs(initial_state, goal_state):
                 heapq.heappush(pq, (cost + 1, next_state, path + [next_state]))
     return None
 
-def solve_8puzzle_ids(initial_state, goal_state, max_depth=50):
+def solve_8puzzle_ids(initial_state, goal_state, max_depth=30):
     def dls(state, path, depth):
         if state == goal_state:
             return path
@@ -171,9 +171,9 @@ def find_zero(state):
     return None
 
 
-def generate_random_state(goal_state, shuffle_moves=30):
-    state = [row[:] for row in goal_state]  
+def generate_random_state(goal_state, shuffle_moves=20):  # Giảm từ 30 xuống 20
+    state = [row[:] for row in goal_state]
     for _ in range(shuffle_moves):
         next_states = get_next_states(state)
-        state = random.choice(next_states)  
+        state = random.choice(next_states)
     return state
