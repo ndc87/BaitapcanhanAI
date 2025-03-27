@@ -181,50 +181,6 @@ def generate_random_state(goal_state, shuffle_moves=20):  # Giảm từ 30 xuố
     return state
 
 
-# def solve_8puzzle_hill_climbing(initial_state, goal_state, max_restarts=5):
-#     def heuristic(state):
-#         """Tính toán số ô sai vị trí so với trạng thái mục tiêu"""
-#         return sum(
-#             1 for i in range(3) for j in range(3)
-#             if state[i][j] != 0 and state[i][j] != goal_state[i][j]
-#         )
-
-#     best_solution = None
-#     best_cost = float("inf")
-
-#     for _ in range(max_restarts):
-#         current_state = generate_random_state(goal_state)  # Tạo trạng thái ngẫu nhiên
-#         path = [current_state]
-#         visited = set()
-#         visited.add(state_to_tuple(current_state))
-
-#         while True:
-#             next_states = get_next_states(current_state)
-#             next_states = [s for s in next_states if state_to_tuple(s) not in visited]
-
-#             if not next_states:
-#                 break  # Không còn trạng thái để mở rộng => Dừng
-
-#             next_states.sort(key=heuristic)  # Chọn trạng thái có heuristic tốt nhất
-#             best_next_state = next_states[0]
-
-#             if heuristic(best_next_state) >= heuristic(current_state):
-#                 break  # Không cải thiện được heuristic => Dừng
-
-#             current_state = best_next_state
-#             visited.add(state_to_tuple(current_state))
-#             path.append(current_state)
-
-#             if current_state == goal_state:
-#                 return path  # Tìm thấy lời giải tốt nhất, trả về luôn
-
-#         # Kiểm tra nếu lời giải này tốt hơn lời giải trước đó
-#         if len(path) < best_cost:
-#             best_solution = path
-#             best_cost = len(path)
-
-#     return best_solution if best_solution else None  # Trả về lời giải tốt nhất tìm được
-import random
 
 def solve_8puzzle_hill_climbing(initial_state, goal_state, max_restarts=10):
     def heuristic(state):
@@ -270,4 +226,32 @@ def solve_8puzzle_hill_climbing(initial_state, goal_state, max_restarts=10):
 
     return best_solution if best_solution else None  # Trả về lời giải tốt nhất tìm được
 
+def solve_8puzzle__step_hill_climbing(initial_state, goal_state, max_restarts=10):
+    def heuristic(state):
+        return sum(1 for i in range(3) for j in range(3) if state[i][j] != 0 and state[i][j] != goal_state[i][j])
+    best_solution = None
+    best_cost = float("inf")
+    for _ in range(max_restarts):
+        current_state = [row[:] for row in initial_state]
+        path = [current_state]
+        visited = set()
+        visited.add(state_to_tuple(current_state))
+        while True:
+            next_states = get_next_states(current_state)
+            next_states = [s for s in next_states if state_to_tuple(s) not in visited]
+            if not next_states:
+                break
+            next_states.sort(key=heuristic)
+            best_next_state = next_states[0]
+            if heuristic(best_next_state) >= heuristic(current_state):
+                break
+            current_state = best_next_state
+            visited.add(state_to_tuple(current_state))
+            path.append(current_state)
+            if current_state == goal_state:
+                return path
+        if len(path) < best_cost:
+            best_solution = path
+            best_cost = len(path)
+    return best_solution if best_solution else None
 

@@ -118,6 +118,8 @@ def main():
             solution = solve_8puzzle_idastar(state_to_solve, goal_state)
         elif algorithm == "SHL":  
             solution = solve_8puzzle_hill_climbing(initial_state, goal_state)
+        elif algorithm == "SSHL":  
+            solution = solve_8puzzle__step_hill_climbing(initial_state, goal_state)
 
         if solution:
             animate_solution(solution)
@@ -152,7 +154,9 @@ def main():
             ("GREEDY", lambda: solve("GREEDY")),
             ("IDA*", lambda: solve("IDA*")),
             ("A*", lambda: solve("A*")),
-            ("SHL", lambda: solve("SHL")) 
+            ("SHL", lambda: solve("SHL")),
+            ("SSHL", lambda: solve("SSHL"))
+
 
         ]
 
@@ -160,7 +164,7 @@ def main():
             draw_button(name, 50, 30 + i * 60, 100, 40, func)
         
         # Vẽ nút reset
-        draw_button("Reset", 50, HEIGHT - 100, 100, 40, reset)
+        draw_button("Reset", 50, HEIGHT - 90, 100, 40, reset)
         
         # Xử lý sự kiện
         for event in pygame.event.get():
