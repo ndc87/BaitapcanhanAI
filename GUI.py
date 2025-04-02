@@ -164,7 +164,7 @@ def main():
             draw_button(name, 50, 30 + i * 60, 100, 40, func)
         
         # Vẽ nút reset
-        draw_button("Reset", 50, HEIGHT - 90, 100, 40, reset)
+        draw_button("Reset", 50, HEIGHT - 80, 100, 40, reset)
         
         # Xử lý sự kiện
         for event in pygame.event.get():
