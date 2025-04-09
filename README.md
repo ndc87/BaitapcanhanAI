@@ -1,1 +1,1 @@
-# B-i-t-p-c-nh-n-AI
+Bài tập cá nhân AI
