@@ -255,3 +255,48 @@ def solve_8puzzle__step_hill_climbing(initial_state, goal_state, max_restarts=10
             best_cost = len(path)
     return best_solution if best_solution else None
 
+import random
+
+def solve_8puzzle_stochastic_hill_climbing(initial_state, goal_state, max_iterations=1000):
+    if not is_solvable(initial_state):
+        return None
+
+    def heuristic(state):
+        """Đánh giá số ô sai vị trí."""
+        return sum(1 for i in range(3) for j in range(3) if state[i][j] != 0 and state[i][j] != goal_state[i][j])
+
+    current_state = [row[:] for row in initial_state]
+    path = [current_state]
+    
+    for _ in range(max_iterations):
+        next_states = get_next_states(current_state)
+        
+        # Nếu không còn bước đi nào tốt hơn, dừng lại
+        if not next_states:
+            break
+
+        # Chọn ngẫu nhiên 1 trạng thái tốt hơn từ danh sách các bước đi có heuristic tốt hơn hiện tại
+        better_states = [state for state in next_states if heuristic(state) < heuristic(current_state)]
+        
+        if better_states:
+            current_state = random.choice(better_states)
+            path.append(current_state)
+            
+            if current_state == goal_state:
+                return path
+        else:
+            break  # Không có nước đi nào tốt hơn, dừng lại
+
+    return path if current_state == goal_state else None
+
+
+def is_solvable(state):
+    """Kiểm tra xem trạng thái 8-Puzzle có thể giải được hay không."""
+    flat_state = [num for row in state for num in row if num != 0]  # Chuyển thành list 1D (bỏ số 0)
+    
+    inversions = sum(
+        1 for i in range(len(flat_state)) for j in range(i + 1, len(flat_state)) 
+        if flat_state[i] > flat_state[j]
+    )
+    
+    return inversions % 2 == 0  # Nếu số inversions chẵn, trạng thái có thể giải được

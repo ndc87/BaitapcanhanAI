@@ -7,7 +7,7 @@ from Solver import *
 pygame.init()
 
 # Kích thước cửa sổ
-WIDTH, HEIGHT = 900, 650
+WIDTH, HEIGHT = 1500, 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("8-Puzzle Solver")
 
@@ -120,7 +120,8 @@ def main():
             solution = solve_8puzzle_hill_climbing(initial_state, goal_state)
         elif algorithm == "SSHL":  
             solution = solve_8puzzle__step_hill_climbing(initial_state, goal_state)
-
+        elif algorithm == "SHC":
+            solution = solve_8puzzle_hill_climbing(initial_state, goal_state)            
         if solution:
             animate_solution(solution)
             current_state[:] = solution[-1]
@@ -155,7 +156,8 @@ def main():
             ("IDA*", lambda: solve("IDA*")),
             ("A*", lambda: solve("A*")),
             ("SHL", lambda: solve("SHL")),
-            ("SSHL", lambda: solve("SSHL"))
+            ("SSHL", lambda: solve("SSHL")),
+            ("SHC", lambda: solve("SHC"))
 
 
         ]
