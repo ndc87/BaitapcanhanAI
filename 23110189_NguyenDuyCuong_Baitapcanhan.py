@@ -1,4 +1,4 @@
-import pygame
+import pygame  # Ensure this import is used in the code
 import time
 import heapq
 import random
@@ -258,7 +258,7 @@ def ucs_solve(start_state, goal_state):
 # --- Heuristic Function (Manhattan Distance is generally better) ---
 def heuristic_misplaced(state, goal_state):
     """Hàm heuristic tính số ô sai vị trí."""
-    goal_tuple = tuple(tuple(row) for row in goal_state) # Cache goal tuple?
+    # goal_tuple = tuple(tuple(row) for row in goal_state) # Removed unused variable
     count = 0
     for r in range(3):
         for c in range(3):
@@ -360,7 +360,7 @@ def a_star_solve(start_state, goal_state):
     visited = {start_tuple: 0}
 
     while priority_queue:
-        f, g, state, path = heapq.heappop(priority_queue)
+        _, g, state, path = heapq.heappop(priority_queue)  # Replaced unused variable 'f' with '_'
         current_tuple = tuple(tuple(row) for row in state)
 
         # Optimization: If we found a shorter path already processed, skip
@@ -478,7 +478,7 @@ def s_ahc_solve(start_state, goal_state): # Steepest Ascent Hill Climbing
         if not neighbors: break
 
         best_neighbor = None
-        min_h = current_h
+        # min_h = current_h  # Removed unused variable
 
         # Find the absolute best among all valid neighbors
         candidates = []
@@ -547,7 +547,7 @@ def Simulated_Annealing(start_state, goal_state):
     current_state = start_state
     current_h = heuristic_manhattan(current_state, goal_state)
     # Path tracking is tricky for SA, as it wanders. We track the best *seen* state.
-    best_state = current_state
+    # best_state = current_state  # Removed unused variable
     best_h = current_h
     # We *can* store the actual path taken, but it won't be optimal
     path_taken = [current_state]
@@ -620,7 +620,7 @@ def and_or_graph_search(start_state, goal_state):
         # For 8-puzzle, OR means trying any valid move.
         # AND doesn't really apply unless subproblems were defined differently.
         # This structure resembles standard search more than true AND-OR decomposition.
-        plan = {} # Store potential plan steps
+        # plan = {} # Removed unused variable
 
         for neighbor in neighbors:
              # Simulate the 'AND' part - for 8-puzzle, the 'AND' is just reaching the next state.
@@ -654,15 +654,317 @@ def and_or_graph_search(start_state, goal_state):
          return path
 
 
-def sensorless_search(start_state, goal_state):
+# def sensorless_search(start_state, goal_state):
+#     """
+#     Sensorless search cho 8-puzzle với trạng thái bắt đầu đã biết.
+#     Hoạt động tương đương BFS trong trường hợp này.
+#     Trả về đường đi (list các states) nếu thành công.
+#     """
+#     print("Running Sensorless Search (equivalent to BFS for known start state)...")
+#     # Chỉ cần gọi BFS vì trạng thái bắt đầu đã biết và hành động xác định
+#     return bfs_solve(start_state, goal_state)
+
+
+
+
+
+# Danh sách hành động hợp lệ
+ACTIONS = ['UP', 'DOWN', 'LEFT', 'RIGHT']
+
+def get_possible_states():
+    """Trả về tất cả các trạng thái có thể trong 8-puzzle (9! hoán vị)."""
+    from itertools import permutations
+    return set(permutations(range(9)))
+
+def move(state_flat_tuple, action):
     """
-    Sensorless search cho 8-puzzle với trạng thái bắt đầu đã biết.
-    Hoạt động tương đương BFS trong trường hợp này.
-    Trả về đường đi (list các states) nếu thành công.
+    Di chuyển ô trống (0) theo action nếu hợp lệ.
+    Args:
+        state_flat_tuple: Trạng thái hiện tại dưới dạng tuple phẳng (9 phần tử).
+        action: Hành động ('UP', 'DOWN', 'LEFT', 'RIGHT').
+    Returns:
+        Trạng thái mới (tuple phẳng) nếu di chuyển hợp lệ, None nếu không.
     """
-    print("Running Sensorless Search (equivalent to BFS for known start state)...")
-    # Chỉ cần gọi BFS vì trạng thái bắt đầu đã biết và hành động xác định
-    return bfs_solve(start_state, goal_state)
+    if not isinstance(state_flat_tuple, tuple) or len(state_flat_tuple) != 9:
+        return None # Đầu vào không hợp lệ
+
+    try:
+        index = state_flat_tuple.index(0)
+    except ValueError:
+        return None # Không tìm thấy ô trống (trạng thái không hợp lệ)
+
+    row, col = divmod(index, 3)
+    new_row, new_col = row, col
+
+    if action == 'UP':
+        if row == 0: return None # Không thể đi lên từ hàng 0
+        new_row -= 1
+    elif action == 'DOWN':
+        if row == 2: return None # Không thể đi xuống từ hàng 2
+        new_row += 1
+    elif action == 'LEFT':
+        if col == 0: return None # Không thể đi trái từ cột 0
+        new_col -= 1
+    elif action == 'RIGHT':
+        if col == 2: return None # Không thể đi phải từ cột 2
+        new_col += 1
+    else:
+        return None # Hành động không hợp lệ
+
+    new_index = new_row * 3 + new_col
+    new_state_list = list(state_flat_tuple) # Chuyển sang list để thay đổi
+    # Hoán đổi ô trống với ô ở vị trí mới
+    new_state_list[index], new_state_list[new_index] = new_state_list[new_index], new_state_list[index]
+    return tuple(new_state_list) # Trả về tuple phẳng mới
+
+def apply_action_to_belief(belief, action):
+    """Áp dụng hành động lên toàn bộ tập belief (tập các trạng thái)."""
+    new_belief = set()
+    for state in belief:
+        new_state = move(state, action)
+        if new_state:
+            new_belief.add(new_state)
+    return new_belief
+
+
+def is_solvable(state_flat_tuple):
+    """
+    Kiểm tra trạng thái có thể giải được hay không.
+    Args:
+        state_flat_tuple: Trạng thái ở dạng tuple 1D (9 phần tử).
+    Returns:
+        True nếu trạng thái có thể giải được, False nếu không.
+    """
+    if not isinstance(state_flat_tuple, tuple) or len(state_flat_tuple) != 9:
+        # print(f"is_solvable: Invalid input {state_flat_tuple}") # Debug
+        return False # Input không hợp lệ
+
+    # Loại bỏ số 0 (ô trống) khỏi trạng thái
+    flat_state_list = [tile for tile in state_flat_tuple if tile != 0]
+    if len(flat_state_list) != 8: # Phải còn 8 số sau khi bỏ số 0
+        # print(f"is_solvable: Invalid state after removing 0 {flat_state_list}") # Debug
+        return False
+
+    # Đếm số lượng inversions
+    inversions = sum(
+        1 for i in range(len(flat_state_list))
+        for j in range(i + 1, len(flat_state_list))
+        if flat_state_list[i] > flat_state_list[j]
+    )
+    # Trạng thái có thể giải được nếu số inversions là chẵn
+    return inversions % 2 == 0
+
+def tuple_flat_to_list_nested(state_flat_tuple):
+    """Chuyển tuple phẳng (1, 2, 3, ...) thành list lồng nhau [[1, 2, 3], ...]."""
+    if not isinstance(state_flat_tuple, tuple) or len(state_flat_tuple) != 9:
+        return None
+    try:
+        return [list(state_flat_tuple[i*3:(i+1)*3]) for i in range(3)]
+    except Exception:
+        return None
+
+def list_nested_to_tuple_flat(state_nested_list):
+    """Chuyển list lồng nhau [[1, 2, 3], ...] thành tuple phẳng (1, 2, 3, ...)."""
+    if not state_nested_list or len(state_nested_list) != 3:
+        return None
+    try:
+        flat_list = []
+        for row in state_nested_list:
+            if len(row) != 3: return None
+            flat_list.extend(row)
+        if len(flat_list) != 9: return None # Đảm bảo đủ 9 phần tử
+        return tuple(flat_list)
+    except Exception:
+        return None
+
+
+
+
+def sensorless_search(start_state_nested, goal_state_nested, time_limit=60):
+    """
+    Sensorless search (phiên bản điều chỉnh) sử dụng A* trong không gian belief.
+    Tìm một kế hoạch (plan) đưa trạng thái bắt đầu duy nhất đến trạng thái đích.
+
+    Args:
+        start_state_nested: Trạng thái bắt đầu (list lồng nhau).
+        goal_state_nested: Trạng thái đích (list lồng nhau).
+        time_limit: Giới hạn thời gian (giây).
+
+    Returns:
+        List các hành động (plan) nếu tìm thấy, None nếu không.
+    """
+    print("Running Sensorless Search (A* on single-state initial belief)...")
+    start_time = time.time()
+
+    # 1. Chuyển đổi trạng thái đầu vào sang tuple phẳng
+    start_state_flat = list_nested_to_tuple_flat(start_state_nested)
+    goal_state_flat = list_nested_to_tuple_flat(goal_state_nested)
+
+    if start_state_flat is None or goal_state_flat is None:
+        print("Sensorless: Invalid start or goal state format.")
+        return None
+
+    # Kiểm tra trạng thái bắt đầu có giải được không (quan trọng nếu start không phải từ random)
+    # if not is_solvable(start_state_flat):
+    #     print("Sensorless: Start state is not solvable.")
+    #     return None
+
+    # 2. Tạo belief ban đầu chỉ chứa trạng thái bắt đầu
+    initial_belief = frozenset([start_state_flat])
+    # 3. Tạo belief đích chỉ chứa trạng thái đích
+    goal_belief = frozenset([goal_state_flat])
+
+    # 4. Định nghĩa hàm heuristic cho belief state
+    def heuristic(belief):
+        """Heuristic: Trung bình Manhattan của các trạng thái trong belief + kích thước belief."""
+        if not belief:
+            return float("inf")
+
+        total_manhattan = 0
+        valid_states_count = 0
+        for state_flat in belief:
+            # Chuyển đổi tuple phẳng -> list lồng nhau để dùng heuristic_manhattan
+            state_nested = tuple_flat_to_list_nested(state_flat)
+            if state_nested:
+                # Gọi heuristic_manhattan với list lồng nhau
+                mh = heuristic_manhattan(state_nested, goal_state_nested)
+                if mh != float('inf'):
+                    total_manhattan += mh
+                    valid_states_count += 1
+                # else: # Debugging
+                #     print(f"Heuristic: Inf Manhattan for state {state_nested}")
+            # else: # Debugging
+            #     print(f"Heuristic: Failed conversion for {state_flat}")
+
+
+        if valid_states_count == 0:
+            # print("Heuristic: No valid states in belief to calculate Manhattan.") # Debug
+            return float('inf') # Hoặc return len(belief) nếu muốn ưu tiên giảm số state
+
+        avg_manhattan = total_manhattan / valid_states_count
+        # Kết hợp: ưu tiên giảm khoảng cách, sau đó giảm số state
+        # Chia nhỏ len(belief) để nó ít ảnh hưởng hơn Manhattan
+        return avg_manhattan + len(belief) * 0.1
+
+    # 5. Khởi tạo A*
+    # (f_score, g_score, belief_state, plan_list_of_actions)
+    frontier = []
+    initial_h = heuristic(initial_belief)
+    if initial_h == float('inf'):
+        print("Sensorless: Cannot compute initial heuristic.")
+        return None
+    heapq.heappush(frontier, (initial_h, 0, initial_belief, []))
+
+    # visited: {belief_state: min_g_score}
+    visited = {initial_belief: 0}
+    nodes_expanded = 0
+
+    # 6. Vòng lặp A*
+    while frontier:
+        # Kiểm tra thời gian
+        if time.time() - start_time > time_limit:
+            print(f"Sensorless Timeout ({time_limit}s), Nodes Expanded: {nodes_expanded}")
+            return None
+
+        # Lấy belief có f_score thấp nhất
+        f, g_score, current_belief, plan = heapq.heappop(frontier)
+        nodes_expanded += 1
+
+        # Kiểm tra xem có phải belief đích không
+        if current_belief == goal_belief:
+            print(
+                f"Sensorless: Plan found with {len(plan)} actions, "
+                f"Nodes Expanded: {nodes_expanded}"
+            )
+            return plan # Trả về danh sách hành động
+
+        # Kiểm tra nếu đã có đường đi tốt hơn tới belief này
+        if current_belief in visited and g_score > visited[current_belief]:
+            continue
+
+        # Debug print (có thể bỏ đi để tăng tốc)
+        # print(f"Exploring belief state size {len(current_belief)}, g={g_score}, f={f}, Plan len: {len(plan)}")
+
+        # Thử các hành động có thể
+        for action in ACTIONS:
+            next_belief_set = set()
+            action_is_valid_for_all = True # Giả định hành động hợp lệ cho mọi state trong belief
+
+            # Áp dụng hành động lên từng trạng thái trong belief hiện tại
+            for state_flat in current_belief:
+                next_state_flat = move(state_flat, action) # Dùng hàm move đã sửa
+                if next_state_flat:
+                    next_belief_set.add(next_state_flat)
+                else:
+                    # Nếu hành động không hợp lệ cho BẤT KỲ trạng thái nào trong belief,
+                    # thì hành động đó không thể áp dụng cho toàn bộ belief.
+                    action_is_valid_for_all = False
+                    break # Không cần kiểm tra các state khác cho action này
+
+            # Chỉ xem xét belief tiếp theo nếu hành động hợp lệ cho tất cả state ban đầu
+            # và tập belief mới không rỗng
+            if action_is_valid_for_all and next_belief_set:
+                next_belief = frozenset(next_belief_set)
+                new_g = g_score + 1
+
+                # Nếu chưa thăm belief này hoặc tìm thấy đường đi ngắn hơn
+                if next_belief not in visited or new_g < visited[next_belief]:
+                    visited[next_belief] = new_g
+                    h_next = heuristic(next_belief)
+                    if h_next == float('inf'): # Đừng thêm vào frontier nếu heuristic là vô cùng
+                         # print(f"Skipping belief with inf heuristic: size {len(next_belief)}") # Debug
+                         continue
+                    new_f = new_g + h_next
+                    new_plan = plan + [action] # Thêm hành động vào kế hoạch
+                    heapq.heappush(frontier, (new_f, new_g, next_belief, new_plan))
+
+    print(f"Sensorless: No plan found, Nodes Expanded: {nodes_expanded}")
+    return None # Không tìm thấy kế hoạch
+
+# --- Hàm áp dụng kế hoạch (MỚI) ---
+def apply_plan(start_state_nested, plan):
+    """
+    Áp dụng một kế hoạch (danh sách hành động) lên trạng thái bắt đầu
+    để tạo ra đường đi các trạng thái.
+
+    Args:
+        start_state_nested: Trạng thái bắt đầu (list lồng nhau).
+        plan: Danh sách các hành động ['UP', 'DOWN', ...].
+
+    Returns:
+        List các trạng thái (list lồng nhau) bao gồm cả trạng thái bắt đầu,
+        hoặc None nếu có lỗi.
+    """
+    if not start_state_nested or not isinstance(plan, list):
+        return None
+
+    current_state_nested = deepcopy(start_state_nested)
+    path_states_nested = [deepcopy(current_state_nested)] # Bắt đầu với trạng thái gốc
+
+    for action in plan:
+        current_state_flat = list_nested_to_tuple_flat(current_state_nested)
+        if current_state_flat is None:
+            print("Apply Plan Error: Failed to flatten current state.")
+            return None # Lỗi chuyển đổi
+
+        next_state_flat = move(current_state_flat, action)
+        if next_state_flat is None:
+            # Điều này không nên xảy ra nếu plan được tạo bởi search hợp lệ
+            print(f"Apply Plan Error: Invalid action '{action}' from state {current_state_nested}")
+            return path_states_nested # Trả về path tới điểm lỗi
+
+        next_state_nested = tuple_flat_to_list_nested(next_state_flat)
+        if next_state_nested is None:
+            print("Apply Plan Error: Failed to unflatten next state.")
+            return None # Lỗi chuyển đổi
+
+        path_states_nested.append(deepcopy(next_state_nested))
+        current_state_nested = next_state_nested # Cập nhật trạng thái hiện tại
+
+    return path_states_nested
+
+
+
 
 def genetic_search(start_state, goal_state, population_size=50, generations=100, mutation_rate=0.2):
     """
@@ -751,7 +1053,7 @@ def genetic_search(start_state, goal_state, population_size=50, generations=100,
         # Chọn lọc (Giữ lại nửa tốt nhất - Truncation Selection)
         # Có thể dùng các phương pháp chọn lọc khác (Roulette, Tournament)
         num_survivors = population_size // 2
-        survivors = [state for fit, state in fitness_scores[:num_survivors]]
+        survivors = [state for _, state in fitness_scores[:num_survivors]]  # Replaced unused variable 'fit' with '_'
 
         # Tạo thế hệ mới từ survivors thông qua đột biến (và crossover bị loại bỏ)
         new_population = deepcopy(survivors) # Giữ lại survivors
@@ -878,7 +1180,7 @@ def draw_screen(color=PINK):
     # pygame.display.flip()
 
 
-def print_steps_to_terminal(path):
+def print_steps_to_terminal(_):  # Replaced unused parameter 'path' with '_'
     """In ra các ma trận trạng thái trong terminal."""
     global global_path # Sử dụng biến global đã lưu
     if not global_path:
@@ -993,7 +1295,16 @@ while running:
                         elif selected_algorithm == "Annealing": path_result = Simulated_Annealing(original_state, target_state)
                         elif selected_algorithm == "And-Or Graph": path_result = and_or_graph_search(original_state, target_state)
                         elif selected_algorithm == "Sensorless":
-                            path_result = sensorless_search(original_state, target_state) # Gọi hàm đã sửa
+                            plan_result = sensorless_search(original_state, target_state) # Gọi hàm đã sửa
+                            if plan_result:
+                                # Chuyển plan (actions) thành path (states) để hiển thị
+                                path_result = apply_plan(original_state, plan_result)
+                                if path_result is None:
+                                    print("Error applying the found plan to generate state path.")
+                                    plan_result = None # Đánh dấu là không thành công
+                                    path_result = []
+                            else:
+                                path_result = [] # Không tìm thấy plan
                         elif selected_algorithm == "Genetic":
                             # GA trả về trạng thái cuối cùng, không phải path
                             solution_state = genetic_search(original_state, target_state)
