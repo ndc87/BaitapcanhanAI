@@ -29,7 +29,7 @@ BORDER_RADIUS = 10
 BUTTON_WIDTH, BUTTON_HEIGHT = 120, 40
 
 # Danh sách thuật toán
-algorithms = ["BFS", "DFS", "UCS", "IDS", "Greedy", "A*","IDA*","SHC","S_AHC","Stochastic","Annealing","And-Or Graph","Genetic","Sensorless"]
+algorithms = ["BFS", "DFS", "UCS", "IDS", "Greedy", "A*", "IDA*", "SHC", "S_AHC", "Stochastic", "Annealing", "And-Or Graph", "Genetic", "Sensorless", "Backtracking"]
 selected_algorithm = None
 
 # Biến toàn cục
@@ -173,8 +173,6 @@ def get_neighbors(state):
             moves.append(new_state)
     return moves
 
-# --- Các thuật toán tìm kiếm (BFS, DFS, UCS, ..., Annealing, And-Or Graph) ---
-# --- GIỮ NGUYÊN CÁC THUẬT TOÁN NÀY ---
 def bfs_solve(start_state, goal_state):
     start_tuple = tuple(tuple(row) for row in start_state) # Chuyển sang tuple
     goal_tuple = tuple(tuple(row) for row in goal_state)   # Chuyển sang tuple
@@ -214,14 +212,8 @@ def dfs_solve(start_state, goal_state):
 
         if current_tuple == goal_tuple:
             return path
-
-        # Thêm vào visited khi pop ra để tránh chu trình sâu hơn
-        # visited.add(current_tuple) # Có thể thêm ở đây hoặc trước khi push
-
         neighbors = get_neighbors(state)
         if not neighbors: continue
-
-        # Duyệt ngược để DFS đi đúng hướng trái/sâu hơn trước
         for neighbor in reversed(neighbors):
             neighbor_tuple = tuple(tuple(row) for row in neighbor)
             if neighbor_tuple not in visited:
@@ -295,12 +287,6 @@ def heuristic_manhattan(state, goal_state):
                     # Return a large distance or skip? Let's return large.
                     return float('inf')
     return distance
-
-
-# --- Các thuật toán còn lại (IDS, Greedy, A*, IDA*, SHC, S_AHC, Stochastic, Annealing, And-Or) ---
-# Sử dụng heuristic_manhattan thay vì heuristic (misplaced) cho hiệu quả tốt hơn
-# (Code của các hàm này giữ nguyên từ file trước của bạn, chỉ cần đảm bảo chúng dùng đúng heuristic)
-
 def ids_solve(start_state, goal_state):
     # --- (Code IDS giữ nguyên, đảm bảo state sang tuple khi cần) ---
     def dls(state, goal, depth, path):
@@ -794,6 +780,51 @@ def genetic_search(start_state, goal_state, population_size=50, generations=100,
     return best_state_overall
 
 
+def backtracking_search(start_state, goal_state, max_depth=50):
+    """Thuật toán Backtracking Search."""
+    path = []  # Lưu trữ đường đi
+    visited = set()  # Tập các trạng thái đã thăm để tránh lặp
+
+    def backtrack(state, depth):
+        # Nếu vượt quá độ sâu tối đa, quay lui
+        if depth > max_depth:
+            return False
+
+        # Thêm trạng thái hiện tại vào đường đi
+        path.append(state)
+
+        # Nếu đạt trạng thái mục tiêu, trả về True
+        if tuple(tuple(row) for row in state) == tuple(tuple(row) for row in goal_state):
+            return True
+
+        # Đánh dấu trạng thái đã thăm
+        state_tuple = tuple(tuple(row) for row in state)
+        if state_tuple in visited:
+            path.pop()
+            return False
+        visited.add(state_tuple)
+
+        # Lấy tất cả các trạng thái có thể di chuyển
+        for next_state in get_neighbors(state):
+            if backtrack(next_state, depth + 1):
+                return True
+
+        # Nếu không tìm thấy lời giải, loại bỏ trạng thái hiện tại khỏi đường đi
+        path.pop()
+        return False
+
+    # Gọi hàm backtrack từ trạng thái ban đầu
+    if backtrack(start_state, 0):
+        return path
+    else:
+        return []
+
+
+
+
+
+
+
 # --- Ma trận trạng thái ban đầu và đích ---
 original_state = [
      [1, 2, 3],
@@ -907,9 +938,6 @@ draw_screen() # Vẽ màn hình ban đầu
 pygame.display.flip() # Hiển thị lần đầu
 
 while running:
-    # Không cần vẽ lại màn hình mỗi frame nếu không có gì thay đổi
-    # draw_screen() # Xóa dòng này khỏi đầu vòng lặp event
-
     for event in pygame.event.get():
         redraw_needed = False # Cờ để chỉ vẽ lại khi cần
 
@@ -964,7 +992,6 @@ while running:
                         elif selected_algorithm == "Stochastic": path_result = stochastic_solve(original_state, target_state)
                         elif selected_algorithm == "Annealing": path_result = Simulated_Annealing(original_state, target_state)
                         elif selected_algorithm == "And-Or Graph": path_result = and_or_graph_search(original_state, target_state)
-                        # --- SỬA LỖI GỌI HÀM ---
                         elif selected_algorithm == "Sensorless":
                             path_result = sensorless_search(original_state, target_state) # Gọi hàm đã sửa
                         elif selected_algorithm == "Genetic":
@@ -982,17 +1009,16 @@ while running:
                             else:
                                 print("Genetic Algorithm did not return a valid state.")
                                 path_result = [] # Không có giải pháp
-                        # --- Kết thúc sửa lỗi gọi hàm ---
-
+                        elif selected_algorithm == "Backtracking":
+                            path_result = backtracking_search(original_state, target_state)
                     except Exception as e:
                          print(f"!!!!!!!!!!!!!! Error during {selected_algorithm} execution !!!!!!!!!!!!!!")
                          import traceback
-                         traceback.print_exc() # In chi tiết lỗi
-                         path_result = [] # Đặt là rỗng nếu có lỗi
+                         traceback.print_exc() 
+                         path_result = [] 
 
                     elapsed_time = time.time() - start_time
 
-                    # --- Xử lý kết quả ---
                     if path_result and isinstance(path_result, list) and len(path_result) > 0:
                          # Kiểm tra phần tử cuối cùng của path_result có phải goal không
                          is_goal_found = tuple(tuple(row) for row in path_result[-1]) == tuple(tuple(row) for row in target_state)
