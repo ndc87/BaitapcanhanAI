@@ -285,14 +285,14 @@ Trong bài toán CSP, mục tiêu là tìm và gán giá trị cho một tập h
 
 ### So sánh Hiệu suất Sinh trạng thái: Backtracking vs AC3
 
-| Phương pháp sinh   | Thuật toán kiểm tra | Path Steps (Sinh) | Time (s) | Nodes (Sinh/Kiểm tra) |
-|--------------------|---------------------|-------------------|----------|------------------------|
-| **Backtracking**   | A\*                 | 50                | **0.004**| 242                    |
-| AC3                | A\*                 | 106               | 0.008    | 521                    |
-| **Backtracking**   | BeamSearch          | 22                | 1.133    | 81207                  |
-| AC3                | BeamSearch          | 25                | **2.188**| 154894                 |
-| **Backtracking**   | BFS                 | 17                | **0.002**| 140                    |
-| AC3                | BFS                 | 22                | 0.055    | 1349                   |
+| Phương pháp sinh   | Thuật toán kiểm tra | Path Steps (Sinh) | Time (s) | 
+|--------------------|---------------------|-------------------|----------|
+| **Backtracking**   | A\*                 | 50                | **0.004**|
+| AC3                | A\*                 | 106               | 0.008    | 
+| **Backtracking**   | BeamSearch          | 22                | 1.133    |
+| AC3                | BeamSearch          | 25                | **2.188**|
+| **Backtracking**   | BFS                 | 17                | **0.002**|
+| AC3                | BFS                 | 22                | 0.055    |
 
 ---
 
