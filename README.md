@@ -1,6 +1,6 @@
 # Trình Giải 8-Puzzle Kết Hợp Trực Quan Thuật Toán Tìm Kiếm AI
 
-Đây là một ứng dụng có giao diện người dùng (GUI) phát triển bằng thư viện Tkinter trong Python, hỗ trợ người dùng theo dõi trực quan quá trình giải bài toán 8 ô chữ (8-Puzzle) thông qua nhiều thuật toán tìm kiếm khác nhau trong lĩnh vực Trí tuệ Nhân tạo (AI).
+Đây là một ứng dụng có giao diện người dùng (GUI) phát triển bằng thư viện Tkinter và Pygame trong Python, hỗ trợ người dùng theo dõi trực quan quá trình giải bài toán 8 ô chữ (8-Puzzle) thông qua nhiều thuật toán tìm kiếm khác nhau trong lĩnh vực Trí tuệ Nhân tạo (AI).
 
 ## Mục đích Dự Án
 
