@@ -57,11 +57,6 @@ Nhóm này không sử dụng kiến thức nào về đích đến trong quá t
     * **Độ dài lời giải (steps):**
         * BFS, UCS, IDS: 23 bước (tối ưu).
         * DFS: 7113 bước (không tối ưu).
-    * **Số nút duyệt:**
-        * DFS: 7297
-        * UCS: 103936
-        * BFS: 115372
-        * IDS: 659337
     * **Thời gian:**
         * DFS: 0.604s (nhanh nhất)
         * BFS: 1.297s
@@ -96,10 +91,6 @@ Các thuật toán này sử dụng heuristic (hàm ước lượng) để đị
     - **Độ dài đường đi:**
         - A* và IDA*: 23 bước (tối ưu).
         - Greedy: 79 bước.
-    - **Số nút duyệt:**
-        - Greedy: 455 nút (ít nhất).
-        - A*: 1023 nút.
-        - IDA*: 3209 nút (nhiều nhất).
     - **Thời gian thực thi:**
         - Greedy: 0.007s (nhanh nhất).
         - A*: 0.013s.
@@ -149,11 +140,6 @@ Các thuật toán này thường chỉ duy trì trạng thái hiện tại và 
     - **Độ dài đường đi:**
         - Các Hill Climbing, Beam, Genetic: 4 bước.
         - Simulated Annealing: 23962 bước.
-    - **Số nút duyệt:**
-        - HC (3 loại): 4 nút.
-        - Beam: 12 nút.
-        - GA: 1128 nút.
-        - SA: 24510 nút.
     - **Thời gian thực thi:**
         - HC và Beam: 0.000s.
         - GA: 0.074s.
@@ -210,7 +196,6 @@ Thuật toán thử nghiệm dựa trên logic AND/OR.
     ![](Gif/AND_OR.gif) *(nếu có)*
 
 * **Hiệu suất:**
-    - **Số nút duyệt:** [Số lượng thực tế]
     - **Thời gian thực thi:** [Thời gian đo được]
     - **Độ dài lời giải:** [Số bước]
 
