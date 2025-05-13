@@ -445,33 +445,67 @@ def simulated_annealing_solve(initial_state, goal_state):
     }
 
 
-def beam_search_solve(start_state, goal_state, beam_width=2):
-    def heuristic(state):
-        """Hàm heuristic tính số ô sai vị trí."""
+def beam_search_solve(initial_state, goal_state, beam_width=2):
+    
+    def heuristic(state, goal_state):
+        """Hàm heuristic tính tổng khoảng cách Manhattan."""
         return sum(
-            1 for i in range(3) for j in range(3) if state[i][j] != 0 and state[i][j] != goal_state[i][j]
+            abs(i - goal_i) + abs(j - goal_j)
+            for i in range(3) for j in range(3)
+            if state[i][j] != 0
+            for goal_i in range(3) for goal_j in range(3)
+            if goal_state[goal_i][goal_j] == state[i][j]
         )
 
-    current_states = [(start_state, [])]  # Danh sách trạng thái hiện tại (state, path)
-    while current_states:
-        # Nếu tìm thấy trạng thái đích, trả về đường đi
-        for state, path in current_states:
-            if state == goal_state:
-                return path + [state]
+    start_time = time.time()
+    steps = 0
+    visited = set()
 
-        # Tạo danh sách các trạng thái hàng xóm
-        neighbors = []
-        for state, path in current_states:
-            for neighbor in get_neighbors(state):
-                neighbors.append((neighbor, path + [state]))
+    # Khởi tạo danh sách các trạng thái hiện tại (beam)
+    beam = [(initial_state, [], heuristic(initial_state, goal_state))]  # (trạng thái, đường đi, heuristic)
 
-        # Sắp xếp các trạng thái hàng xóm theo heuristic
-        neighbors.sort(key=lambda x: heuristic(x[0]))
+    while beam:
+        steps += 1
+        next_beam = []
 
-        # Chỉ giữ lại `beam_width` trạng thái tốt nhất
-        current_states = neighbors[:beam_width]
+        for current_state, path, current_heuristic in beam:
+            # Kiểm tra nếu đã đạt trạng thái đích
+            if current_state == goal_state:
+                end_time = time.time()
+                result_info = {
+                    "steps_checked": steps,
+                    "path_length": len(path) + 1,
+                    "time": end_time - start_time,
+                    "states_visited": len(visited)
+                }
+                return path + [current_state], result_info
 
-    return []  # Trả về danh sách rỗng nếu không tìm thấy đường đi
+            # Đánh dấu trạng thái hiện tại là đã thăm
+            visited.add(tuple(tuple(row) for row in current_state))
+
+            # Lấy tất cả các trạng thái lân cận
+            for neighbor in get_neighbors(current_state):
+                neighbor_tuple = tuple(tuple(row) for row in neighbor)
+                if neighbor_tuple not in visited:
+                    new_path = path + [current_state]
+                    neighbor_heuristic = heuristic(neighbor, goal_state)
+                    next_beam.append((neighbor, new_path, neighbor_heuristic))
+
+        # Sắp xếp các trạng thái lân cận theo heuristic và chỉ giữ lại `beam_width` trạng thái tốt nhất
+        next_beam.sort(key=lambda x: x[2])  # Sắp xếp theo giá trị heuristic
+        beam = next_beam[:beam_width]
+
+    # Nếu không tìm thấy lời giải
+    end_time = time.time()
+    return None, {
+        "error": "Không tìm thấy lời giải!",
+        "steps_checked": steps,
+        "time": end_time - start_time,
+        "states_visited": len(visited)
+    }
+
+
+
 def or_and_search(state, goal_state, get_successors, node_type='OR', visited=None):
     if visited is None:
         visited = set()
@@ -1036,13 +1070,13 @@ while running:
 
                 elif selected_algorithm == "BeamSearch":
                     start_time = time.time()  # Bắt đầu đo thời gian
-                    path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
+                    path, result = beam_search_solve(original_state, target_state, beam_width=2)
                     elapsed_time = time.time() - start_time  # Tính thời gian thực thi
                     steps = len(path) - 1 if path else 0  # Tính số bước
                     if path:
                         update_process_state(path)  # Cập nhật trạng thái theo từng bước
                     else:
-                        print("Không tìm thấy đường đi!")
+                        print(result["error"])
                     global_elapsed_time = elapsed_time
                     global_steps = steps
                 elif selected_algorithm == "AND-OR":
@@ -3007,7 +3041,57 @@ while running:
                         global_elapsed_time = elapsed_time
                         global_steps = steps
                     elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0
+                            start_time = time.time()  # Bắt đầu đo thời gian
+                            path = or_and_search(original_state, target_state, get_neighbors)
+                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
+                            steps = len(path) - 1 if path else 0  # Tính số bước
+                            if path:
+                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
+                            else:
+                                print("Không tìm thấy đường đi!")
+                            global_elapsed_time = elapsed_time
+                            global_steps = steps
+                    elif selected_algorithm == "Genetic":
+                            start_time = time.time()  # Bắt đầu đo thời gian
+                            path = genetic_algorithm_solve(original_state, target_state)
+                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
+                            steps = len(path) - 1 if path else 0  # Tính số bước
+                            if path:
+                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
+                            else:
+                                print("Không tìm thấy đường đi!")
+                            global_elapsed_time = elapsed_time
+                            global_steps = steps
+                    elif selected_algorithm == "Sensorless":
+                            start_time = time.time()  # Bắt đầu đo thời gian
+                            path = sensorless_solve(original_state, target_state)
+                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
+                            steps = len(path) - 1 if path else 0  # Tính số bước
+                            if path:
+                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
+                            else:
+                                print("Không tìm thấy đường đi!")
+                            global_elapsed_time = elapsed_time
+                            global_steps = stepspath = sensorless_solve(state, target_state)   
+                    else:
+                        print("Không tìm thấy trạng thái ban đầu hợp lệ!")
+                        original_state = tmp_state
+                    
+                    
+            # Xử lý nút "Steps"
+            steps_button_x, steps_button_y = 550, 500
+            if steps_button_x <= x <= steps_button_x + BUTTON_WIDTH and  steps_button_y <= y <= steps_button_y + BUTTON_HEIGHT:
+                if path:  # Kiểm tra nếu đã có đường đi
+                    print_steps_to_terminal(path)  # In ra các trạng thái trên terminal
+                else:
+                    print("Không có đường đi để hiển thị các bước!")
+            
+            # Xử lý nút "Random"
+            random_button_x, random_button_y = 550, 280
+            if random_button_x <= x <= random_button_x + BUTTON_WIDTH and random_button_y <= y <= random_button_y + BUTTON_HEIGHT:
+                randomize_matrix()  # Tạo ma trận ngẫu nhiên
+                draw_screen()  # Vẽ lại màn hình với ma trận mới
+
+        handle_scroll(event)
+
+pygame.quit()
