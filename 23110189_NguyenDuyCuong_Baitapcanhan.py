@@ -637,24 +637,83 @@ def sensorless_solve(start_state, goal_state):
     return []  #
 
 
+# def backtracking(algorithm, goal_state):
+   
+#     def is_valid_state(state):
+#         values = {state[i][j] for i in range(3) for j in range(3)}
+#         return values == set(range(9))
 
+#     def backtrack(state, used, i=0, j=0):
+#         if i == 3:
+#             if is_valid_state(state):
+#                 for row in state:
+#                     print(row)
+#                 path = None
+#                 if algorithm == "BFS":
+#                     path = bfs_solve(state, goal_state)
+#                 elif algorithm == "DFS":
+#                     path = dfs_solve(state, goal_state)
+#                 elif algorithm == "UCS":
+#                     path = ucs_solve(state, goal_state)
+#                 elif algorithm == "IDS":
+#                     path = ids_solve(state, goal_state)
+#                 elif algorithm == "Greedy":
+#                     path = greedy_solve(state, goal_state)
+#                 elif algorithm == "A*":
+#                     path = a_star_solve(state, goal_state)
+#                 elif algorithm == "IDA*":
+#                     path = ida_star_solve(state, goal_state)
+#                 elif algorithm == "SHC":
+#                     path = shc_solve(state, goal_state)
+#                 elif algorithm == "S_AHC":
+#                     path = s_ahc_solve(state, goal_state)
+#                 elif algorithm == "Stochastic":
+#                     path = stochastic_solve(state, goal_state)
+#                 elif algorithm == "SA":
+#                     path = simulated_annealing_solve(state, goal_state)
+#                 elif algorithm == "BeamSearch":
+#                     path = beam_search_solve(state, goal_state)
+#                 elif algorithm == "AND-OR":
+#                     path = or_and_search(state, goal_state, get_neighbors)
+#                 elif algorithm == "Genetic":
+#                     path = genetic_algorithm_solve(state, goal_state)
+#                 elif algorithm == "Sensorless":
+#                     path = sensorless_solve(state, goal_state)
 
+#                 if path:
+#                     messagebox.showinfo("Success", f"Found a valid start state for algorithm: {algorithm}")
+#                     return state
+#             return None
 
+#         ni, nj = (i, j + 1) if j < 2 else (i + 1, 0)
 
-from tkinter import messagebox
+#         for num in range(9):
+#             if num not in used:
+#                 state[i][j] = num
+#                 used.add(num)
+#                 result = backtrack(state, used, ni, nj)
+#                 if result:
+#                     return result
+#                 used.remove(num)
+#                 state[i][j] = 0  # Quay lui
+
+#         return None
+
+#     ori = [[0] * 3 for _ in range(3)]
+#     return backtrack(ori, set())
+
 
 def backtracking(algorithm, goal_state):
     """
-    Hàm Backtracking để tạo ra một ma trận hợp lệ và kiểm tra xem thuật toán có thể giải được không.
-    :param algorithm: Tên thuật toán như "Greedy", "BFS", "A*", v.v.
-    :param goal_state: Trạng thái đích.
-    :return: Đường đi nếu tìm được, None nếu không.
+    Sử dụng thuật toán Backtracking để tạo ra trạng thái ban đầu hợp lệ và giải bài toán.
     """
     def is_valid_state(state):
+        """Kiểm tra xem trạng thái có hợp lệ không."""
         values = {state[i][j] for i in range(3) for j in range(3)}
         return values == set(range(9))
 
     def backtrack(state, used, i=0, j=0):
+        """Thuật toán Backtracking để tạo trạng thái hợp lệ."""
         if i == 3:
             if is_valid_state(state):
                 for row in state:
@@ -681,9 +740,9 @@ def backtracking(algorithm, goal_state):
                 elif algorithm == "Stochastic":
                     path = stochastic_solve(state, goal_state)
                 elif algorithm == "SA":
-                    path = simulated_annealing_solve(state, goal_state)
+                    path, _ = simulated_annealing_solve(state, goal_state)
                 elif algorithm == "BeamSearch":
-                    path = beam_search_solve(state, goal_state)
+                    path, _ = beam_search_solve(state, goal_state)
                 elif algorithm == "AND-OR":
                     path = or_and_search(state, goal_state, get_neighbors)
                 elif algorithm == "Genetic":
@@ -692,7 +751,9 @@ def backtracking(algorithm, goal_state):
                     path = sensorless_solve(state, goal_state)
 
                 if path:
-                    messagebox.showinfo("Success", f"Found a valid start state for algorithm: {algorithm}")
+                    print("Backtracking tìm thấy đường đi:")
+                    for step in path:
+                        print(step)
                     return state
             return None
 
@@ -710,12 +771,8 @@ def backtracking(algorithm, goal_state):
 
         return None
 
-    ori = [[0] * 3 for _ in range(3)]
-    return backtrack(ori, set())
-
-
-from collections import deque
-from tkinter import messagebox
+    initial_state = [[0] * 3 for _ in range(3)]
+    return backtrack(initial_state, set())
 
 def is_solvable(state):
     flat = sum(state, [])
@@ -726,14 +783,20 @@ def is_solvable(state):
                 inv_count += 1
     return inv_count % 2 == 0
 
+
 def ac3_generate_and_solve(algorithm, goal_state):
+    """
+    Sử dụng thuật toán AC3 để tạo ra trạng thái ban đầu hợp lệ và giải bài toán.
+    """
     print("AC-3")
     variables = [(i, j) for i in range(3) for j in range(3)]
 
     def constraints(xi, vi, xj, vj):
+        """Ràng buộc: Các giá trị trong ma trận phải khác nhau."""
         return vi != vj
 
     def revise(xi, xj, domains):
+        """Loại bỏ các giá trị không hợp lệ khỏi miền giá trị."""
         revised = False
         for vi in domains[xi][:]:
             if all(not constraints(xi, vi, xj, vj) for vj in domains[xj]):
@@ -742,6 +805,7 @@ def ac3_generate_and_solve(algorithm, goal_state):
         return revised
 
     def ac3(domains):
+        """Thuật toán AC3 để duy trì tính nhất quán của các ràng buộc."""
         arcs = deque([(xi, xj) for xi in variables for xj in variables if xi != xj])
         while arcs:
             xi, xj = arcs.popleft()
@@ -754,8 +818,9 @@ def ac3_generate_and_solve(algorithm, goal_state):
         return True
 
     def generate_valid_assignment():
+        """Tạo một trạng thái hợp lệ bằng AC3."""
         while True:
-            # Tạo domain mới ngẫu nhiên mỗi lần
+            # Tạo miền giá trị ngẫu nhiên
             all_values = list(range(9))
             random.shuffle(all_values)
             domains = {var: [val] for var, val in zip(variables, all_values)}
@@ -763,8 +828,8 @@ def ac3_generate_and_solve(algorithm, goal_state):
             if not ac3(domains):
                 continue
 
-            # Gán duy nhất mỗi giá trị
-            assignment = [[0]*3 for _ in range(3)]
+            # Gán giá trị duy nhất cho mỗi biến
+            assignment = [[0] * 3 for _ in range(3)]
             used = set()
             for (i, j) in variables:
                 for val in domains[(i, j)]:
@@ -773,10 +838,7 @@ def ac3_generate_and_solve(algorithm, goal_state):
                         used.add(val)
                         break
 
-            if len(used) != 9:
-                continue
-
-            if is_solvable(assignment):
+            if len(used) == 9 and is_solvable(assignment):
                 return assignment
 
     assignment = generate_valid_assignment()
@@ -784,6 +846,7 @@ def ac3_generate_and_solve(algorithm, goal_state):
     for row in assignment:
         print(row)
 
+    # Giải bài toán với trạng thái ban đầu được tạo bởi AC3
     path = None
     if algorithm == "BFS":
         path = bfs_solve(assignment, goal_state)
@@ -806,9 +869,9 @@ def ac3_generate_and_solve(algorithm, goal_state):
     elif algorithm == "Stochastic":
         path = stochastic_solve(assignment, goal_state)
     elif algorithm == "SA":
-        path = simulated_annealing_solve(assignment, goal_state)
+        path, _ = simulated_annealing_solve(assignment, goal_state)
     elif algorithm == "BeamSearch":
-        path = beam_search_solve(assignment, goal_state)
+        path, _ = beam_search_solve(assignment, goal_state)
     elif algorithm == "AND-OR":
         path = or_and_search(assignment, goal_state, get_neighbors)
     elif algorithm == "Genetic":
@@ -817,11 +880,12 @@ def ac3_generate_and_solve(algorithm, goal_state):
         path = sensorless_solve(assignment, goal_state)
 
     if path:
-        messagebox.showinfo("Success", f"AC-3 found a valid solvable start state for algorithm: {algorithm}")
+        print("AC3 tìm thấy đường đi:")
+        for step in path:
+            print(step)
         return assignment
 
     return None
-
 
 
 def show_algorithm_selector():
@@ -834,11 +898,11 @@ def show_algorithm_selector():
     root = tk.Tk()
     root.title("Select Algorithm")
 
-    # Tạo giao diện trước để đo kích thước
-    filtered_algorithms = [algo for algo in algorithms if algo != ("Backtracking" or "AC-3")]
+    # Lọc các thuật toán, loại bỏ "Backtracking" và "AC-3"
+    filtered_algorithms = [algo for algo in algorithms if algo not in ["Backtracking", "AC-3"]]
     tk.Label(root, text="Choose an algorithm to solve:").pack(pady=10)
-    algo_var = tk.StringVar(value= filtered_algorithms[0])
-    algo_dropdown = ttk.Combobox(root, textvariable=algo_var, values= filtered_algorithms, state="readonly")
+    algo_var = tk.StringVar(value=filtered_algorithms[0] if filtered_algorithms else "")
+    algo_dropdown = ttk.Combobox(root, textvariable=algo_var, values=filtered_algorithms, state="readonly")
     algo_dropdown.pack(pady=10)
     tk.Button(root, text="OK", command=on_select).pack(pady=10)
 
@@ -904,13 +968,107 @@ def randomize_matrix():
     original_state = [flattened[i:i + 3] for i in range(0, len(flattened), 3)]  # Chuyển về ma trận 3x3
     process_state = [row[:] for row in original_state]  # Đồng bộ process_state với original_state
 
+def draw_info_box(elapsed_time, steps):
+    """Vẽ hộp thông tin chứa thời gian và số bước."""
+    font = pygame.font.Font(None, 30)
+    time_text = font.render(f"Time: {elapsed_time:.2f}s", True, (0, 0, 0))
+    steps_text = font.render(f"Steps: {steps}", True, (0, 0, 0))
+    SCREEN.blit(time_text, (600, 400))
+    SCREEN.blit(steps_text, (600, 450))
+
+# Hàm tiện ích để thực thi thuật toán
+def execute_algorithm(solve_func, start_state, target_state):
+    start_time = time.time()
+    path = solve_func(start_state, target_state)
+    elapsed_time = time.time() - start_time
+    steps = len(path) - 1 if path else 0
+    if path:
+        update_process_state(path)
+    else:
+        print("Không tìm thấy đường đi!")
+    return path, elapsed_time, steps
+
+# Hàm tiện ích để cập nhật giao diện
+def update_screen(state, target_state, elapsed_time, steps):
+    SCREEN.fill(WHITE)
+    draw_buttons()
+    draw_action_buttons()
+    draw_matrix(state, 220, 50)
+    draw_matrix(target_state, 500, 50)
+    draw_matrix(state, 220, 350)
+    draw_info_box(elapsed_time, steps)
+    pygame.display.flip()
+
+# Hàm hiển thị bộ chọn thuật toán
+def show_algorithm_selector():
+    """Hiển thị cửa sổ Tkinter để chọn thuật toán và căn giữa màn hình."""
+    def on_select():
+        global selected_algorithm
+        selected_algorithm = algo_var.get()
+        root.destroy()
+
+    root = tk.Tk()
+    root.title("Select Algorithm")
+
+    # Lọc các thuật toán, loại bỏ "Backtracking" và "AC-3"
+    filtered_algorithms = [algo for algo in algorithms if algo not in ["Backtracking", "AC-3"]]
+    tk.Label(root, text="Choose an algorithm to solve:").pack(pady=10)
+    algo_var = tk.StringVar(value=filtered_algorithms[0] if filtered_algorithms else "")
+    algo_dropdown = ttk.Combobox(root, textvariable=algo_var, values=filtered_algorithms, state="readonly")
+    algo_dropdown.pack(pady=10)
+    tk.Button(root, text="OK", command=on_select).pack(pady=10)
+
+    # Cập nhật kích thước giao diện và căn giữa
+    root.update_idletasks()
+    w = root.winfo_width()
+    h = root.winfo_height()
+    screen_w = root.winfo_screenwidth()
+    screen_h = root.winfo_screenheight()
+    x = (screen_w - w) // 2
+    y = (screen_h - h) // 2
+    root.geometry(f'{w}x{h}+{x}+{y}')
+
+    root.mainloop()
+
+# Hàm hiển thị từng bước của đường đi
+def show_path_steps(path):
+    if path:
+        for state in path:
+            update_screen(state, target_state, global_elapsed_time, global_steps)
+            pygame.time.wait(500)  # Đợi 500ms giữa các bước
+    else:
+        print("Không có đường đi để hiển thị!")
+
 # Vòng lặp chính
 running = True
-path = None  # Initialize path to avoid NameError
+path = None
+selected_algorithm = None
+global_elapsed_time = 0
+global_steps = 0
 draw_screen()
+
+# Từ điển ánh xạ thuật toán
+algorithm_map = {
+    "BFS": bfs_solve,
+    "DFS": dfs_solve,
+    "UCS": ucs_solve,
+    "IDS": ids_solve,
+    "Greedy": greedy_solve,
+    "A*": a_star_solve,
+    "IDA*": ida_star_solve,
+    "SHC": shc_solve,
+    "S_AHC": s_ahc_solve,
+    "Stochastic": stochastic_solve,
+    "SA": simulated_annealing_solve,
+    "BeamSearch": lambda s, t: beam_search_solve(s, t, beam_width=2),
+    "AND-OR": lambda s, t: or_and_search(s, t, get_neighbors),
+    "Genetic": genetic_algorithm_solve,
+    "Sensorless": sensorless_solve
+}
+
 while running:
     for event in pygame.event.get():
-        handle_scroll(event)  # Xử lý sự kiện cuộn chuột
+        handle_scroll(event)
         draw_screen()
         if event.type == pygame.QUIT:
             running = False
@@ -919,2178 +1077,62 @@ while running:
 
             # Xử lý chọn thuật toán
             num_algorithms = len(algorithms)
-            half = (num_algorithms + 1) // 2  # Chia đều danh sách thuật toán thành 2 cột
-
+            half = (num_algorithms + 1) // 2
             for i, algo in enumerate(algorithms):
-                col_index = i // half  # Xác định cột (0 hoặc 1)
-                row_index = i % half  # Xác định hàng trong cột
-                button_x = 20 if col_index == 0 else WIDTH - BUTTON_WIDTH - 20  # Cột trái hoặc phải
-                button_y = 50 + row_index * (BUTTON_HEIGHT + 10) - scroll_offset  # Điều chỉnh vị trí theo scroll_offset
-
+                col_index = i // half
+                row_index = i % half
+                button_x = 20 if col_index == 0 else WIDTH - BUTTON_WIDTH - 20
+                button_y = 50 + row_index * (BUTTON_HEIGHT + 10) - scroll_offset
                 if button_x <= x <= button_x + BUTTON_WIDTH and button_y <= y <= button_y + BUTTON_HEIGHT:
                     selected_algorithm = algo
-            
+
             # Xử lý nút "Solve"
             solve_button_x, solve_button_y = 250, 280
             if solve_button_x <= x <= solve_button_x + BUTTON_WIDTH and solve_button_y <= y <= solve_button_y + BUTTON_HEIGHT:
-                if selected_algorithm == "BFS":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = bfs_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
+                if selected_algorithm in ["AC-3", "Backtracking"]:
+                    # Khởi tạo trạng thái ban đầu
+                    state = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+                    update_screen(state, target_state, global_elapsed_time, global_steps)
+                    show_algorithm_selector()
+                    tmp_state = original_state
                     
-                    # Cập nhật giá trị toàn cục
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "DFS":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = dfs_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
+                    # Gọi hàm tạo trạng thái ban đầu
+                    original_state = (ac3_generate_and_solve if selected_algorithm == "AC-3" else backtracking)(selected_algorithm, target_state)
                     
-                    # Cập nhật giá trị toàn cục
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "UCS":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = ucs_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                    
-                elif selected_algorithm == "IDS":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = ids_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    # Cập nhật giá trị toàn cục
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Greedy":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = greedy_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "A*":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = a_star_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "IDA*":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = ida_star_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "SHC":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = shc_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "S_AHC":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = s_ahc_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "Stochastic":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = stochastic_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "SA":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path, result = simulated_annealing_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path and path[-1] == target_state:  # Kiểm tra nếu tìm thấy trạng thái đích
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print(result["error"])
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "BeamSearch":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path, result = beam_search_solve(original_state, target_state, beam_width=2)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print(result["error"])
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "AND-OR":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = or_and_search(original_state, target_state, get_neighbors)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Genetic":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = genetic_algorithm_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-
-                elif selected_algorithm == "Sensorless":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = sensorless_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Backtracking":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    original_state = backtracking(selected_algorithm, target_state)
                     if original_state:
                         print("Trạng thái ban đầu tìm thấy:")
                         for row in original_state:
                             print(row)
-                    else:
-                        print("Không tìm thấy trạng thái ban đầu hợp lệ!")
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(original_state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    #
-                    if selected_algorithm == "BFS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = bfs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-
-                    elif selected_algorithm == "DFS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = dfs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "UCS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ucs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                    else:
-                        print("Không tìm thấy trạng thái ban đầu hợp lệ!")
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(original_state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    #
-                    if selected_algorithm == "BFS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = bfs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-
-                    elif selected_algorithm == "DFS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = dfs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "UCS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ucs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "IDS":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = ids_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    # Cập nhật giá trị toàn cục
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Greedy":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = greedy_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "A*":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = a_star_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "IDA*":     
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = ida_star_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "SHC":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = shc_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "S_AHC":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = s_ahc_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Stochastic":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = stochastic_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "SA":  
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = simulated_annealing_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "BeamSearch":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "AND-OR":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = or_and_search(original_state, target_state, get_neighbors)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Genetic":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = genetic_algorithm_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Sensorless":
-                    start_time = time.time()  # Bắt đầu đo thời gian
-                    path = sensorless_solve(original_state, target_state)
-                    elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                    steps = len(path) - 1 if path else 0  # Tính số bước
-                    if path:
-                        update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                    else:
-                        print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "Backtracking":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    original_state = backtracking(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                    else:
-                        print("Không tìm thấy trạng thái ban đầu hợp lệ!")
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(original_state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    #
-                    if selected_algorithm == "BFS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = bfs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-
-                    elif selected_algorithm == "DFS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = dfs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "UCS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ucs_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                    global_elapsed_time = elapsed_time
-                    global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-                        elif selected_algorithm == "UCS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = ucs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-                        elif selected_algorithm == "UCS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = ucs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = or_and_search(original_state, target_state, get_neighbors)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = genetic_algorithm_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = sensorless_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                elif selected_algorithm == "AC3":
-                    state = [ [0, 0, 0], [0, 0, 0], [0, 0, 0]]
-                    SCREEN.fill(WHITE)
-                    draw_buttons()
-                    draw_action_buttons()
-                    draw_matrix(state, 220, 50)
-                    draw_matrix(target_state, 500, 50)
-                    draw_matrix(state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                    draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                    pygame.display.flip()
-                    show_algorithm_selector()
-                    tmp_state = original_state
-                    original_state = ac3_generate_and_solve(selected_algorithm, target_state)
-                    if original_state:
-                        print("Trạng thái ban đầu tìm thấy:")
-                        for row in original_state:
-                            print(row)
-                        SCREEN.fill(WHITE)
-                        draw_buttons()
-                        draw_action_buttons()
-                        draw_matrix(original_state, 220, 50)
-                        draw_matrix(target_state, 500, 50)
-                        draw_matrix(original_state, 220, 350)  # Vẽ ma trận process_state với màu được chỉ định
-                        draw_info_box(global_elapsed_time, global_steps)  # Truyền thời gian và số bước vào khung thông tin
-                        pygame.display.flip()
-                        #
-                        if selected_algorithm == "BFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = bfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            # Cập nhật giá trị toàn cục
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-
-                        elif selected_algorithm == "DFS":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = dfs_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                        
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDS":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ids_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        # Cập nhật giá trị toàn cục
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Greedy":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = greedy_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "A*":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = a_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "IDA*":     
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = ida_star_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = shc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "S_AHC":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = s_ahc_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "Stochastic":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = stochastic_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "SA":  
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = simulated_annealing_solve(original_state, target_state)
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "BeamSearch":
-                        start_time = time.time()  # Bắt đầu đo thời gian
-                        path = beam_search_solve(original_state, target_state, beam_width=2)  # Beam width mặc định là 2
-                        elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                        steps = len(path) - 1 if path else 0  # Tính số bước
-                        if path:
-                            update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                        else:
-                            print("Không tìm thấy đường đi!")
-                        global_elapsed_time = elapsed_time
-                        global_steps = steps
-                    elif selected_algorithm == "AND-OR":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = or_and_search(original_state, target_state, get_neighbors)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-                    elif selected_algorithm == "Genetic":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = genetic_algorithm_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            global_elapsed_time = elapsed_time
-                            global_steps = steps
-                    elif selected_algorithm == "Sensorless":
-                            start_time = time.time()  # Bắt đầu đo thời gian
-                            path = sensorless_solve(original_state, target_state)
-                            elapsed_time = time.time() - start_time  # Tính thời gian thực thi
-                            steps = len(path) - 1 if path else 0  # Tính số bước
-                            if path:
-                                update_process_state(path)  # Cập nhật trạng thái theo từng bước
-                            else:
-                                print("Không tìm thấy đường đi!")
-                            global_elapsed_time = elapsed_time
-                            global_steps = stepspath = sensorless_solve(state, target_state)   
+                        update_screen(original_state, target_state, global_elapsed_time, global_steps)
+                        # Tiếp tục giải từ trạng thái ban đầu đến trạng thái đích
+                        path, elapsed_time, steps = execute_algorithm(algorithm_map["BFS"], original_state, target_state)
+                        global_elapsed_time, global_steps = elapsed_time, steps
+                        show_path_steps(path)
                     else:
                         print("Không tìm thấy trạng thái ban đầu hợp lệ!")
                         original_state = tmp_state
-                    
-                    
+                        path = None
+                elif selected_algorithm in algorithm_map:
+                    path, elapsed_time, steps = execute_algorithm(algorithm_map[selected_algorithm], original_state, target_state)
+                    global_elapsed_time, global_steps = elapsed_time, steps
+                    show_path_steps(path)
+                else:
+                    print(f"Thuật toán {selected_algorithm} không được hỗ trợ!")
+                    path = None
+
             # Xử lý nút "Steps"
             steps_button_x, steps_button_y = 550, 500
-            if steps_button_x <= x <= steps_button_x + BUTTON_WIDTH and  steps_button_y <= y <= steps_button_y + BUTTON_HEIGHT:
-                if path:  # Kiểm tra nếu đã có đường đi
-                    print_steps_to_terminal(path)  # In ra các trạng thái trên terminal
+            if steps_button_x <= x <= steps_button_x + BUTTON_WIDTH and steps_button_y <= y <= steps_button_y + BUTTON_HEIGHT:
+                if path:
+                    print_steps_to_terminal(path)
                 else:
                     print("Không có đường đi để hiển thị các bước!")
-            
+
             # Xử lý nút "Random"
             random_button_x, random_button_y = 550, 280
             if random_button_x <= x <= random_button_x + BUTTON_WIDTH and random_button_y <= y <= random_button_y + BUTTON_HEIGHT:
-                randomize_matrix()  # Tạo ma trận ngẫu nhiên
-                draw_screen()  # Vẽ lại màn hình với ma trận mới
+                randomize_matrix()
+                draw_screen()
 
         handle_scroll(event)
 
