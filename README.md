@@ -202,22 +202,16 @@ Trong bài toán CSP, mục tiêu là tìm và gán giá trị cho một tập h
     ![](Gif/Backtracking.gif)
 
   - **Backtracking cho A\*:**  
-    ![](Gif/BacktrackingA.gif)
-
-  - **Backtracking cho Beam Search:**  
-    ![](Gif/BacktrackingBeam.gif)
+    ![](Gif/Backtracking4A.gif)
 
 - **AC3 (Arc Consistency 3):**  
   Duy trì tính nhất quán cung giữa các biến. Loại bỏ các giá trị không thỏa mãn ràng buộc "tất cả các giá trị phải khác nhau".
 
   - **AC3 cho BFS:**  
-    ![](Gif/AC3BFS.gif)
+    ![](Gif/Backtracking.gif)
 
   - **AC3 cho A\*:**  
-    ![](Gif/AC3A.gif)
-
-  - **AC3 cho Beam Search:**  
-    ![](Gif/AC3Beam.gif)
+    ![](Gif/Backtracing4A.gif)
 
 #### Hình ảnh so sánh hiệu suất:
 
