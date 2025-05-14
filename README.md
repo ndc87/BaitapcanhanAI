@@ -36,7 +36,6 @@ Nhóm này không sử dụng kiến thức nào về đích đến trong quá t
     * **Initial State (Trạng thái bắt đầu):** `[[2, 6, 5], [0, 8, 7], [4, 3, 1]]`
     * **Goal State (Trạng thái mục tiêu):** `[[1, 2, 3], [4, 5, 6], [7, 8, 0]]`
     * **Actions (Hành động):** Di chuyển ô trống lên/xuống/trái/phải.
-    * **Transition Model:** Mô tả trạng thái kế tiếp sau một hành động.
     * **Path Cost:** Tổng chi phí (1 cho mỗi bước).
     * **Solution:** Chuỗi hành động đưa trạng thái bắt đầu đến mục tiêu.
 
@@ -171,18 +170,9 @@ Thuật toán thử nghiệm dựa trên logic AND/OR.
     - Nút OR: thành công nếu *một nhánh con* dẫn đến lời giải.
     - Nút AND: thành công nếu *tất cả các nhánh con* dẫn đến lời giải.
     - Áp dụng trên không gian trạng thái 8-Puzzle, kiểm tra tất cả đường khả thi.
-
-* **GIF minh họa hoạt động:**
-    ![](Gif/AND_OR.gif) *(nếu có)*
-
-* **Hiệu suất:**
-    - **Thời gian thực thi:** [Thời gian đo được]
-    - **Độ dài lời giải:** [Số bước]
-
 * **Nhận xét:**
     - AND/OR Search phù hợp với các bài toán cây điều kiện, không gian có ràng buộc logic hơn là tìm kiếm đường đi tuyến tính.
     - Khi áp dụng cho 8-Puzzle là không phổ biến và chủ yếu mang tính thử nghiệm.
- 
 
 ### 2.5. Các Thuật toán Tìm kiếm có Ràng buộc (Constraint Satisfaction Problems - CSP)
 
