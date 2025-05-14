@@ -199,13 +199,13 @@ Trong bài toán CSP, mục tiêu là tìm và gán giá trị cho một tập h
   Thuật toán quay lui để sinh ra các cấu hình hợp lệ (hoán vị từ 0–8). Nếu việc gán không thỏa mãn ràng buộc, thuật toán sẽ quay lui.
 
   - **Backtracking cho BFS:**  
-    ![](Gif/BackTrackingBFS.gif)
+    ![](Gif/Backtracking.gif)
 
   - **Backtracking cho A\*:**  
-    ![](Gif/BackTrackingA.gif)
+    ![](Gif/BacktrackingA.gif)
 
   - **Backtracking cho Beam Search:**  
-    ![](Gif/BackTrackingBeam.gif)
+    ![](Gif/BacktrackingBeam.gif)
 
 - **AC3 (Arc Consistency 3):**  
   Duy trì tính nhất quán cung giữa các biến. Loại bỏ các giá trị không thỏa mãn ràng buộc "tất cả các giá trị phải khác nhau".
