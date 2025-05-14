@@ -1,4 +1,4 @@
-# Trình Giải 8-Puzzle Kết Hợp Trực Quan Thuật Toán Tìm Kiếm AI
+# Đồ Án Giải 8-Puzzle Kết Hợp Trực Quan Thuật Toán Tìm Kiếm AI
 
 Đây là một ứng dụng có giao diện người dùng (GUI) được phát triển bằng thư viện **Tkinter** và **Pygame** trong Python. Chương trình cho phép người dùng quan sát trực tiếp quá trình giải bài toán **8-Puzzle** thông qua việc áp dụng các **thuật toán tìm kiếm trong Trí tuệ Nhân tạo (AI)**. Giao diện trực quan, đi kèm hiệu ứng mô phỏng theo từng bước, giúp người học nắm bắt được cách hoạt động nội tại của từng thuật toán.
 
