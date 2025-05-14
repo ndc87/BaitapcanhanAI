@@ -144,11 +144,11 @@ Giải quyết bài toán khi agent không biết chính xác trạng thái củ
       ![](Gif/POsearch.gif)
 
 * **Hiệu suất so sánh:**
-    - **Độ dài đường đi:** 14 bước cho cả hai.
-    - **Số trạng thái duyệt:** 6413 trạng thái.
+    - **Độ dài đường đi:** 15-20 bước cho cả hai.
+    - **Số trạng thái duyệt:** khoảng 5000 trạng thái.
     - **Thời gian:**
-        - No Observation: 13.775s.
-        - Partially Observable: 6.117s.
+        - No Observation: khoảng 13s
+        - Partially Observable: hơn 6s
 
 * **Nhận xét:**
     - Không gian niềm tin lớn dẫn đến thời gian tìm kiếm dài.
