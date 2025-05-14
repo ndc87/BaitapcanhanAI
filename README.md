@@ -211,7 +211,7 @@ Trong bài toán CSP, mục tiêu là tìm và gán giá trị cho một tập h
     ![](Gif/Backtracking.gif)
 
   - **AC3 cho A\*:**  
-    ![](Gif/Backtracing4A.gif)
+    ![](Gif/Backtracking4A.gif)
 
 #### Hình ảnh so sánh hiệu suất:
 
@@ -234,30 +234,32 @@ Trong bài toán CSP, mục tiêu là tìm và gán giá trị cho một tập h
 
 | Phương pháp sinh   | Thuật toán kiểm tra | Path Steps (Sinh) | Time (s) | 
 |--------------------|---------------------|-------------------|----------|
-| **Backtracking**   | A\*                 | 50                | **0.004**|
+| **Backtracking**   | A\*                 | 22                | **0.0945**|
 | AC3                | A\*                 | 106               | 0.008    | 
-| **Backtracking**   | BFS                 | 17                | **0.002**|
-| AC3                | BFS                 | 22                | 0.055    |
+| **Backtracking**   | BFS                 | 22                | **0.0718**|
+| AC3                | BFS                 | 22                | 0.718   |
 
 ---
 
 ### Nhận xét:
 
-1. **Về Thời gian và Số nút:**
-   - Phương pháp **Backtracking** cho kết quả nhanh hơn và duyệt ít nút hơn so với AC3 ở cả ba thuật toán (A\*, BeamSearch, BFS).
-   - Đặc biệt, sự khác biệt rõ nhất thể hiện ở BeamSearch và BFS.
+1. **Về thời gian thực thi và số lượng nút duyệt:**
+   - **Backtracking** cho thấy tốc độ xử lý nhanh hơn và ít phải duyệt nút hơn so với AC3 trên cả ba thuật toán (A\*, BeamSearch, BFS).
+   - Sự chênh lệch về hiệu suất này đặc biệt rõ ràng trong hai thuật toán **BeamSearch** và **BFS**.
 
-2. **Về Số bước sinh (Path Steps):**
-   - Backtracking tạo trạng thái với số bước sinh ít hơn trong BeamSearch và BFS.
-   - Riêng với A\*, AC3 sinh ra trạng thái có số bước ít hơn nhưng mất nhiều thời gian và duyệt nhiều nút hơn.
-
-### Kết luận:
-
-Phương pháp **Backtracking** cho thấy hiệu quả cao hơn trong việc sinh ra trạng thái bắt đầu phù hợp so với **AC3**, thể hiện qua thời gian xử lý nhanh hơn và số lượng nút duyệt ít hơn trong phần lớn các trường hợp.
+2. **Về số bước trong quá trình sinh trạng thái (Path Steps):**
+   - Trong BeamSearch và BFS, phương pháp Backtracking tạo ra lời giải với số bước sinh trạng thái ít hơn.
+   - Tuy nhiên, đối với A\*, **AC3** cho số bước ít hơn nhưng lại tốn nhiều thời gian và duyệt nhiều trạng thái hơn.
 
 ---
 
-## 3. Kết luận
+### Kết luận:
 
-Dự án **"8-Puzzle Solver Visualization"** là công cụ học tập trực quan, giúp người học hiểu sâu về các thuật toán tìm kiếm trong trí tuệ nhân tạo. Thông qua việc mô phỏng quá trình duyệt trạng thái và so sánh hiệu suất các thuật toán, người dùng sẽ nhận thức rõ hơn về ưu/nhược điểm và phạm vi ứng dụng của từng phương pháp. Dự án cũng minh họa tầm quan trọng của việc lựa chọn đúng thuật toán và cấu trúc dữ liệu phù hợp với từng bài toán cụ thể.
+Phương pháp **Backtracking** tỏ ra hiệu quả hơn **AC3** trong việc tạo ra trạng thái xuất phát phù hợp, thể hiện qua việc giảm thiểu thời gian xử lý và số lượng trạng thái cần duyệt trong hầu hết các trường hợp.
+
+---
+
+## 3. Kết luận chung
+
+Dự án **"8-Puzzle Solver Visualization"** là một công cụ học tập trực quan hỗ trợ hiệu quả cho việc tìm hiểu các thuật toán tìm kiếm trong lĩnh vực trí tuệ nhân tạo. Qua việc mô phỏng chi tiết quá trình duyệt trạng thái và so sánh hiệu năng giữa các thuật toán, người học có cái nhìn cụ thể hơn về ưu điểm, hạn chế cũng như tình huống áp dụng phù hợp của từng phương pháp. Dự án đồng thời nhấn mạnh vai trò quan trọng của việc lựa chọn đúng thuật toán và cấu trúc dữ liệu cho từng bài toán cụ thể.
 
