@@ -45,24 +45,19 @@ Nhóm này không sử dụng kiến thức nào về đích đến trong quá t
 * **So sánh hiệu suất:**
 
     * **BFS:**
-      ![](hieuSuat/BFS.png)
+      ![](hieusuat/BFS.png)
     * **DFS:**
-      ![](hieuSuat/DFS.png)
+      ![](hieusuat/DFS.png)
     * **UCS:**
-      ![](hieuSuat/UCS.png)
+      ![](hieusuat/UCS.png)
     * **IDS:**
-      ![](hieuSuat/IDS.png)
+      ![](hieusuat/IDS.png)
 
 * **Nhận xét tổng quan:**
     * **Độ dài lời giải (steps):**
         * BFS, UCS, IDS: 23 bước (tối ưu).
-        * DFS: 7113 bước (không tối ưu).
-    * **Thời gian:**
-        * DFS: 0.604s (nhanh nhất)
-        * BFS: 1.297s
-        * UCS: 1.880s
-        * IDS: 6.926s (chậm nhất)
-    * **Tổng kết:** DFS chạy nhanh và duyệt ít nút nhưng lời giải rất dài. BFS, UCS và IDS tìm được lời giải tối ưu.
+        * DFS: Không tìm được lời giải (không tối ưu).
+
 
 ### 2.2. Thuật Toán Tìm Kiếm Có Thông Tin (Informed Search)
 
@@ -73,28 +68,24 @@ Các thuật toán này sử dụng heuristic (hàm ước lượng) để đị
  
 * **Các thuật toán triển khai:**
     * **A\***: `f(n) = g(n) + h(n)` – đảm bảo tìm ra lời giải tối ưu với heuristic admissible.
-      ![](Gif/A_star.gif)
+      ![](Gif/A.gif)
     * **Greedy Best-First Search**: Chỉ dùng `h(n)` – thường nhanh nhưng không tối ưu.
       ![](Gif/Greedy.gif)
     * **IDA\***: Giống A* nhưng dùng lặp sâu dần và ít tốn bộ nhớ.
-      ![](Gif/IDA_star.gif)
+      ![](Gif/IDA.gif)
 
 * **Hình ảnh so sánh hiệu suất:**
     * A*:  
-      ![](hieuSuat/A_star.png)
+      ![](hieusuat/A.png)
     * Greedy Best-First Search:  
-      ![](hieuSuat/Greedy.png)
+      ![](hieusuat/Greedy.png)
     * IDA*:  
-      ![](hieuSuat/IDA_star.png)
+      ![](hieusuat/IDA.png)
 
 * **Nhận xét hiệu suất:**
     - **Độ dài đường đi:**
         - A* và IDA*: 23 bước (tối ưu).
-        - Greedy: 79 bước.
-    - **Thời gian thực thi:**
-        - Greedy: 0.007s (nhanh nhất).
-        - A*: 0.013s.
-        - IDA*: 0.023s.
+        - Greedy: 71 bước.
     - **Tổng hợp:**
         - A* và IDA* tìm lời giải tối ưu.
         - Greedy nhanh hơn nhưng không tối ưu.
@@ -112,38 +103,20 @@ Các thuật toán này thường chỉ duy trì trạng thái hiện tại và 
     * **Chi phí đường đi:** Mỗi bước = 1.
 
 * **Thuật toán đã triển khai:**
-    * **Simple Hill Climbing**
-    * **Steepest Ascent Hill Climbing**
-    * **Stochastic Hill Climbing**
-      ![](Gif/HC.gif)
-    * **Simulated Annealing**
     * **Beam Search**
-      ![](Gif/Beam.gif)
-    * **Genetic Algorithm**
-      ![](Gif/GA.gif)
+      ![](Gif/Beamsearch.gif)
+  
 
-* **Hình ảnh so sánh hiệu suất:**
-    - Simple Hill Climbing:  
-      ![](hieuSuat/SimpleHC.png)
-    - Steepest HC:  
-      ![](hieuSuat/SteppestHC.png)
-    - Stochastic HC:  
-      ![](hieuSuat/StochasticHC.png)
+* **Hình ảnh hiệu suất:**
     - Simulated Annealing:  
-      ![](hieuSuat/SA.png)
+      ![](hieusuat/SA.png)
     - Beam Search:  
-      ![](hieuSuat/Beam.png)
-    - Genetic Algorithm:  
-      ![](hieuSuat/GA.png)
+      ![](hieusuat/Beamsearch.png)
 
 * **Nhận xét hiệu suất:**
     - **Độ dài đường đi:**
-        - Các Hill Climbing, Beam, Genetic: 4 bước.
-        - Simulated Annealing: 23962 bước.
-    - **Thời gian thực thi:**
-        - HC và Beam: 0.000s.
-        - GA: 0.074s.
-        - SA: 0.286s.
+        - Các Hill Climbing, Beam, Genetic: khoảng 6-70 bước.
+        - Simulated Annealing: Hơn 600 bước.
     - **Tổng hợp:**
         - Hill Climbing, GA, Beam nhanh và hiệu quả.
         - SA tìm đường dài, tốn thời gian nhưng có khả năng thoát cực tiểu cục bộ.
@@ -249,23 +222,18 @@ Trong bài toán CSP, mục tiêu là tìm và gán giá trị cho một tập h
 #### Hình ảnh so sánh hiệu suất:
 
 - **Backtracking cho BFS:**  
-  ![](hieuSuat/BackTrackingBFS.png)
+  ![](hieusuat/Backtracking4BFS.png)
 
 - **AC3 cho BFS:**  
-  ![](hieuSuat/AC3BFS.png)
+  ![](hieusuat/AC34BFS.png)
 
 - **Backtracking cho A\*:**  
-  ![](hieuSuat/BackTrackingA.png)
+  ![](hieusuat/Backtracking4A.png)
 
 - **AC3 cho A\*:**  
-  ![](hieuSuat/AC3A.png)
+  ![](hieusuat/AC34BFS.png)
 
-- **Backtracking cho Beam Search:**  
-  ![](hieuSuat/BackTrackingBeam.png)
-
-- **AC3 cho Beam Search:**  
-  ![](hieuSuat/AC3Beam.png)
-
+-
 ---
 
 ### So sánh Hiệu suất Sinh trạng thái: Backtracking vs AC3
@@ -274,8 +242,6 @@ Trong bài toán CSP, mục tiêu là tìm và gán giá trị cho một tập h
 |--------------------|---------------------|-------------------|----------|
 | **Backtracking**   | A\*                 | 50                | **0.004**|
 | AC3                | A\*                 | 106               | 0.008    | 
-| **Backtracking**   | BeamSearch          | 22                | 1.133    |
-| AC3                | BeamSearch          | 25                | **2.188**|
 | **Backtracking**   | BFS                 | 17                | **0.002**|
 | AC3                | BFS                 | 22                | 0.055    |
 
