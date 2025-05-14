@@ -1,25 +1,32 @@
 # Trình Giải 8-Puzzle Kết Hợp Trực Quan Thuật Toán Tìm Kiếm AI
 
-Đây là một ứng dụng có giao diện người dùng (GUI) phát triển bằng thư viện Tkinter và Pygame trong Python, hỗ trợ người dùng theo dõi trực quan quá trình giải bài toán 8 ô chữ (8-Puzzle) thông qua nhiều thuật toán tìm kiếm khác nhau trong lĩnh vực Trí tuệ Nhân tạo (AI).
+Đây là một ứng dụng có giao diện người dùng (GUI) được phát triển bằng thư viện **Tkinter** và **Pygame** trong Python. Chương trình cho phép người dùng quan sát trực tiếp quá trình giải bài toán **8-Puzzle** thông qua việc áp dụng các **thuật toán tìm kiếm trong Trí tuệ Nhân tạo (AI)**. Giao diện trực quan, đi kèm hiệu ứng mô phỏng theo từng bước, giúp người học nắm bắt được cách hoạt động nội tại của từng thuật toán.
 
 ## Mục đích Dự Án
 
-Mục tiêu chính của dự án gồm:
+Dự án hướng tới các mục tiêu sau:
 
-1.  **Minh họa sinh động** cách các thuật toán tìm kiếm giải quyết bài toán 8 ô chữ.
-2.  Giúp người học dễ dàng **hiểu rõ các khái niệm nền tảng** trong AI như trạng thái, heuristic, và mô hình duyệt trạng thái.
-3.  Cung cấp công cụ để **đánh giá và so sánh hiệu suất** các thuật toán về thời gian xử lý, số bước, và số trạng thái duyệt.
+1.  **Trực quan hóa quá trình tìm kiếm:** Hiển thị sinh động từng bước giải bài toán 8-Puzzle, từ trạng thái ban đầu đến trạng thái đích.
+2.  **Hỗ trợ học tập và nghiên cứu:** Giúp người học hiểu rõ các khái niệm cốt lõi trong AI như không gian trạng thái, hàm heuristic, và chiến lược tìm kiếm.
+3.  **So sánh hiệu suất thuật toán:** Cho phép người dùng theo dõi và đánh giá các thuật toán qua các chỉ số như thời gian thực thi, số bước sinh, và số trạng thái được duyệt.
 
 ## Nội dung Chính
 
-Dự án bao gồm các thành phần:
+Dự án bao gồm các thành phần chính như sau:
 
-*   Cài đặt logic của 8-Puzzle và các thao tác xử lý trạng thái.
-*   Tích hợp nhiều thuật toán tìm kiếm AI thuộc hai nhóm: không có thông tin và có thông tin.
-*   Giao diện người dùng bằng Tkinter hiển thị trạng thái khởi đầu, trạng thái mục tiêu, quá trình giải và thống kê hiệu suất.
-*   Hiệu ứng mô phỏng (animation) hành trình giải theo thuật toán.
-*   Tạo tự động các trạng thái khởi đầu hợp lệ (giải được).
+- **Cài đặt logic bài toán 8-Puzzle:** Bao gồm biểu diễn trạng thái, kiểm tra tính hợp lệ và các phép di chuyển hợp lệ của ô trống.
+- **Tích hợp nhiều thuật toán tìm kiếm AI:**  
+  Gồm hai nhóm chính:
+  - **Thuật toán không có thông tin (uninformed search):** BFS, DFS,...
+  - **Thuật toán có thông tin (informed search):** A\*, Beam Search,...
+- **Giao diện người dùng thân thiện:**  
+  Sử dụng Tkinter để hiển thị các trạng thái hiện tại, trạng thái mục tiêu, và các tùy chọn chọn thuật toán.
+- **Hiệu ứng mô phỏng bằng Pygame:**  
+  Cho phép người dùng quan sát từng bước thuật toán duyệt trạng thái như một hoạt ảnh sinh động.
+- **Tự động sinh trạng thái đầu hợp lệ:**  
+  Bảo đảm các trạng thái ban đầu đều có lời giải, giúp quá trình thử nghiệm thuận tiện và chính xác.
 
+---
 ### 2.1. Thuật Toán Tìm Kiếm Không Có Thông Tin (Uninformed Search)
 
 Nhóm này không sử dụng kiến thức nào về đích đến trong quá trình tìm kiếm. Thuật toán hoạt động dựa trên cấu trúc không gian trạng thái thuần túy.
